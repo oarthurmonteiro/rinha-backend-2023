@@ -1,0 +1,11 @@
+# Permite autenticação com senha do sistema local.
+hostssl all all 127.0.0.1/32 scram-sha-256
+hostssl all all ::1/128 scram-sha-256
+
+# Habilita replicação com SSL pelo usuário e IP especificados.
+hostssl replication postgres 0.0.0.0/0 scram-sha-256
+
+# Permite conexões de outros contêineres.
+# A faixa 172.x.x.x é padrão nas instalações atuais do Docker, mas a sua
+# instalação pode estar configurada com uma faixa de IP diferente.
+hostssl all all 172.0.0.0/8 scram-sha-256

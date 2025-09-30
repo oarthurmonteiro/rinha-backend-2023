@@ -1,0 +1,25 @@
+[general]
+host = "0.0.0.0"
+port = 6432
+
+# Fórmula: 2 por núcleo.
+workers = 4
+
+# Método de balanceamento de carga.
+# round_robin: revezamento.
+# random: aleatório.
+# least_active_connections: prioriza o banco de menor carga.
+load_balancing_strategy = "least_active_connections"
+
+# Caminho para os arquivos do certificado.
+tls_certificate = "/pgdog-ssl/default.crt"
+tls_private_key = "/pgdog-ssl/default.key"
+
+[admin]
+# Senha do usuário administrativo.
+# Ver https://docs.pgdog.dev/administration.
+password = ""
+
+[[databases]]
+host = "db"
+name = "postgres"

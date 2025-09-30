@@ -1,0 +1,89 @@
+services:
+  api:
+    build: ./app
+    volumes:
+      - ./app:/app
+    hostname: api
+    depends_on:
+      - db
+      - redis
+    expose: 
+      - "3000"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      # resources:
+      #   limits:
+      #     # cpus: '0.30'
+      #     memory: '0.5GB'
+    healthcheck:
+      test: nc -z localhost 3000
+      timeout: 3s
+      start_period: 3s
+    # command: ["bun", "run", "prisma-push"]
+
+  worker:
+    build: ./app
+    volumes:
+      - ./app:/app
+    depends_on:
+      - redis
+      - db
+    entrypoint: ["bun", "run", "worker"]
+    # deploy:
+    #   resources:
+    #     limits:
+    #       # cpus: '0.15'
+    #       memory: '256MB'
+    
+  nginx: # Load Balancer
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    ports:
+      - "9999:9999"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       # cpus: '0.5'
+    #       memory: '128MB'
+
+  redis:
+    image: redis
+    hostname: redis
+    command: redis-server --save "" --appendonly no --maxclients 20000
+    # deploy:
+    #   resources:
+    #     limits:
+    #       # cpus: '0.10'
+    #       memory: '0.3GB'
+
+  db: # Banco de dados
+    image: postgres:17.4-alpine
+    environment:
+      # - POSTGRES_USER=johndoe
+      - POSTGRES_PASSWORD=randompassword
+      - POSTGRES_DB=mydb
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./config/postgresql:/etc/postgresql
+      - data:/var/lib/postgresql/dat  a
+    ports:
+      - "6666:5432"
+    command: |
+      postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.55'
+    #       memory: '1.2GB'
+    healthcheck:
+      test: nc -z localhost 5432
+      timeout: 3s
+      start_period: 3s
+
+volumes:
+  data: {}
