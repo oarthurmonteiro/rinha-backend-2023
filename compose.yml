@@ -55,6 +55,8 @@ services:
     depends_on:
       - db
     environment:
+      MIX_ENV: $MIX_ENV
+      SECRET_KEY_BASE: $SECRET_KEY_BASE
       DATABASE_URL: $DATABASE_URL
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
@@ -62,7 +64,6 @@ services:
       POSTGRES_HOSTNAME: db
     deploy:
       replicas: 2
-
 
 
 volumes:
