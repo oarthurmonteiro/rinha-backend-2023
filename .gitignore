@@ -1,0 +1,4 @@
+.env
+compose.override.yml
+config/postgresql/conf.d/*.conf
+config/postgresql/pg_hba.d/*.conf

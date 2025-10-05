@@ -1,0 +1,36 @@
+# Precisa comportar o tamanho do pool de cada usuário configurado no proxy.
+max_connections = 100
+
+# Anota consultas que demoram mais do que o normal para análise.
+# É importante adequar esse valor às características do seu caso de uso.
+log_min_duration_statement = 1s
+
+# Arquiva segmentos processados do WAL ao invés de excluí-los.
+# Com esse recurso réplicas podem se recuperar de atrasos maiores,
+# embora a recuperação fique mais lenta.
+archive_mode = on
+
+# Comando de arquivamento/recuperação do WAL.
+# %p: caminho completo do arquivo.
+# %f: apenas o nome do arquivo.
+archive_command = 'cp %p /tmp/%f'
+restore_command = 'cp /tmp/%f %p'
+
+# Informações de conexão à instância principal.
+# O usuário deve ter permissão de replicação.
+primary_conninfo = 'host=10.0.0.1 user=postgres password=postgres'
+
+# Nome do slot de replicação no banco primário.
+primary_slot_name = 'replica'
+
+# Ativa a criptografia.
+ssl = on
+
+# Caminho para o chave privada e certificado do servidor.
+# Arquivos precisam ser gerados manualmente. Ver instruções no README.md.
+ssl_cert_file = '/var/lib/postgresql/data/default.crt'
+ssl_key_file = '/var/lib/postgresql/data/default.key'
+
+# Habilita coleta de dados de performance por consulta.
+# Precisa da extensão `pg_stat_statements`.
+shared_preload_libraries = 'pg_stat_statements'
